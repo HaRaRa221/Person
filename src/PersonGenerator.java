@@ -10,15 +10,15 @@ import static java.nio.file.StandardOpenOption.CREATE;
 public class PersonGenerator {
     public static void main(String[] args)
     {
-        ArrayList<String> Dpeople = new ArrayList<>();
+        ArrayList<Person> Dpeople = new ArrayList<>();
         Scanner in = new Scanner (System.in);
 
         String ID = "";
         String fName = "";
         String lName = "";
-        String DpeopleData = "";
         String title = "";
         int YOB = 0;
+        char DQ = '\u0022';
 
 
         File workingDirectory = new File(System.getProperty("user.dir"));
@@ -32,19 +32,32 @@ public class PersonGenerator {
             fName = SafeInput.getNonZeroLenString(in, "What is the first name of person");
             lName = SafeInput.getNonZeroLenString(in, "What is the last name of person");
             title = SafeInput.getNonZeroLenString(in, "What title does the person go by (Mr., Mrs., Ms., Dr., etc.");
-            YOB = SafeInput.getRangedInt(in, "Enter your birth year in 4 digits", 1000, 9999);
+            YOB = SafeInput.getRangedInt(in, "Enter your birth year in 4 digits", 1940, 2000);
 
-            DpeopleData = ID + ", " + fName + ", " + lName + ", " + title + ", " + YOB;
-            Dpeople.add(DpeopleData);
+
+            Dpeople.add(new Person(ID, fName, lName, title, YOB));
 
             done = SafeInput.getYNConfirm(in, "Are you finished with the people data?");
 
         } while (!done);
 
-        for (String d: Dpeople) {
-            System.out.println(d);
+        for (Person d: Dpeople) {
+            System.out.println(d.toCSVRecord());
         }
 
+        System.out.println();
+        System.out.println("<Person>");
+        for (Person d: Dpeople) {
+            System.out.println(d.toXMLRecord());
+        }
+        System.out.println("</Person>");
+        System.out.println();
+
+        System.out.println("{" + DQ + "Person" + DQ + ":[");
+        for(Person d: Dpeople) {
+            System.out.println(d.toJSONRecord());
+        }
+        System.out.println("]}");
         try
         {
 
@@ -54,9 +67,9 @@ public class PersonGenerator {
                     new BufferedWriter(new OutputStreamWriter(out));
 
 
-            for(String rec : Dpeople)
+            for(Person rec : Dpeople)
             {
-                writer.write(rec, 0, rec.length());
+                writer.write(rec.toCSVRecord());
                 writer.newLine();
 
             }
